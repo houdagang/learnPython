@@ -10,12 +10,9 @@ def func2():
 
 a = func1()
 print(a)
-b = func2()
-print(b)
 #1
 #1
-#2
-#None
+
 
 #默认参数
 def menu(appetizer,course,dessert='绿豆沙'):
