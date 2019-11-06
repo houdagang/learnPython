@@ -40,6 +40,7 @@ def main():
 
 #筛选数据
 def selectName(user_name=''):
+    list = []
     for i in range(5,max_row):
         obj = []
         name = sheet.cell(i, 1).value
@@ -50,9 +51,15 @@ def selectName(user_name=''):
         date = ''
         week = ''
         if all_date.strip() != '':
-            date = all_date[:9]
+            date = all_date[:9]1
+            
             week = all_date[-3:]
         sb_time = sheet.cell(i,8).value
+        sb_zt = sheet.cell(i,9).value
+        if not sb_time:
+            if sb_zt:
+                if sb_zt.strip() == '缺卡':
+                    sb_time = '08:30'
         xb_time = sheet.cell(i,10).value
         if bool(sb_time) and bool(xb_time):
             obj.append(name)
@@ -104,6 +111,7 @@ def calTime(user_list):
             time2 = datetime.datetime(int(day2[0]),int(day2[1]),int(day2[2]),int(day2[3]),int(day2[4]))
             time3 = datetime.datetime(int(tomo[0]),int(tomo[1]),int(tomo[2]),int(time00[0]),int(time00[1]))
             time0 = datetime.datetime(int(day2[0]),int(day2[1]),int(day2[2]),int(day0[0]),int(day0[1]))
+            time000 = datetime.datetime(int(tomo[0]),int(tomo[1]),int(tomo[2]),int(0),int(0))
             if time1.__ge__(time2):
                 #计算时间差 - 0.5小时
                 seconds = (time1 - time0).seconds
@@ -115,8 +123,7 @@ def calTime(user_list):
                 
                 #加班过了凌晨
             elif time11.__le__(time3):
-                #计算时间差 - 0.5小时
-                seconds = (time11 - time00).seconds
+                seconds = (time11 - time000).seconds
                 hours = seconds/3600 + 6
                 jb_hours = math.floor(hours/0.5)*0.5
                 #拼接加班时长
@@ -140,6 +147,7 @@ def calTime(user_list):
             time_xw = '13:00'
             
             sb = datetime.datetime.strptime(user[2].strip(),'%H:%M')
+            xb = datetime.datetime.strptime(user[3].strip(),'%H:%M')
             sw = datetime.datetime.strptime(time_sw,'%H:%M')
             xw = datetime.datetime.strptime(time_xw,'%H:%M')
 
@@ -147,7 +155,10 @@ def calTime(user_list):
             hours = 0
             if sb < sw:
                 seconds = (a2 - a1).seconds
-                hours = seconds/3600 - 1.5
+                if xb < xw:
+                    hours = seconds/3600
+                else:
+                    hours = seconds/3600 - 1.5
             elif sw <= sb < xw:
                 a = datetime.datetime(int(day1[0]),int(day1[1]),int(day1[2]),int('13'),int('00'))
                 seconds = (a2 - a).seconds
